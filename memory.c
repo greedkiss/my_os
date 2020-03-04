@@ -132,6 +132,7 @@ static unsigned int put_page(unsigned int page, unsigned int address){
     return page;
 }
 
+//和put_page功能相同，只不过最后置脏位
 unsigned int put_dirty_page(unsigned int page, unsigned int address){
     unsigned int tmp, *page_table;
     if(page < LOW_MEM || page >= HIGH_MEMORY)
@@ -170,6 +171,7 @@ void un_wp_page (unsigned int * table_entry){
     copy_page(old_page, new_page);
 }
 
+//写时出错，页面共享
 void do_wp_page(unsigned int error_code, unsigned int address){
     if(address < TASK_SIZE){
         printf("内核代码受保护\n");
@@ -182,3 +184,229 @@ void do_wp_page(unsigned int error_code, unsigned int address){
     un_wp_page( (unsigned int*) (*((unsigned int *)((address >> 20) & 0xffc)) & 0xfffff000) + ((address >> 10) & 0xffc) );
 }
 
+//写页面验证
+void write_verify(unsigned int address){
+    unsigned int page;
+    if(!((page = *((unsigned int *) ((address >> 20) & 0xffc)) ) & 1))
+        return;
+    page &=  0xfffff000;
+    page += ((address >> 10) & 0xffc);
+    //判断r/w位和p位
+    if((3 & *(unsigned int *) page) == 1)
+        un_wp_page((unsigned int *) page);
+    return;
+}
+
+//申请空闲页并将address映射到空闲页
+void get_empty_page(unsigned int address){
+    unsigned int tmp;
+    if(!(tmp = get_free_page()) || !put_page(tmp, address)){
+        free_page(tmp);
+        printf("内存溢出\n");
+    }
+}
+
+//页面共享，p进程共享页面给current，并且页面都置为只读
+static int try_to_share (unsigned int address, struct task_struct * p){
+    unsigned int from;
+    unsigned int to;
+    unsigned int from_page;
+    unsigned int to_page;
+    unsigned int phys_addr;
+    //进程逻辑地址空间都是64MB对齐，所以不会有零头，不用担心右移２０位后低位被舍去
+    from_page = to_page =((address >> 20) & 0xffc);
+    from_page += ((p->start_code >> 20) & 0xffc);
+    to_page += ((current->start_code >> 20) & 0xffc);
+    from = *(unsigned int *) from_page;
+    if(!(from & 1))
+        return 0;
+    from &= 0xfffff000;
+    from_page = from + ((address >> 10) & 0xffc);
+    phys_addr = *(unsigned int *)from_page;
+    //0x41是dirty位和p位，如果干净且存在则继续下去
+    if((phys_addr & 0x41) != 0x01)
+        return 0;
+    phys_addr &= 0xfffff000;
+    if(phys_addr >= HIGH_MEMORY || phys_addr < LOW_MEM)
+        return 0;
+    to = *(unsigned int *) to_page;
+    if(!(to & 1)){
+        if(to = get_free_page())
+            *(unsigned int *) to_page = to | 7;
+        else{
+            printf("内存不够\n");
+            return 0;
+        }
+    }
+    to &= 0xfffff000;
+    to_page = to + ((address >> 10) & 0xffc);
+    if(1 & *(unsigned int *) to_page){
+        printf("内核出错，页面已经存在\n");
+        return 0;
+    }
+    *(unsigned int *) from_page &= ~2;
+    *(unsigned int *) to_page = *(unsigned int *) from_page;
+    phys_addr -= LOW_MEM;
+    phys_addr >>= 12;
+    mem_map[phys_addr]++;
+    return 1;
+}
+
+//共享页面，当出现缺页异常时候，与运行同一个执行文件的其他进程进行页面共享处理
+static int share_page(struct m_inode * inode , unsigned int address){
+    struct task_struct ** p;
+    //inode->i_count < 2 表示只有一个进程在运行该文件，所有找不到其他进程
+    if(inode->i_count < 2 || !inode)
+        return 0;
+    for(p = &LASK_TASK ; p > &FIRST_TASK ; --p){
+        if(!*p)
+            continue;
+        if(current == *p)
+            continue;
+        if(address < LIBRARY_OFFSET){
+            if(inode != (*p)->executable)
+                continue;
+        }else{
+            if(inode != (*p)->library)
+                continue;
+        }
+        if(try_to_share(address, *p))
+            return 1;
+    }
+    return 0;
+}
+
+//缺页处理函数
+void do_no_page(unsigned int error_code, unsigned int address){
+    int nr[4];
+    unsigned int tmp;
+    unsigned int page;
+    int block, i;
+    struct m_inode * inode;
+    //先判断address合法性
+    if(address < TASK_SIZE){
+        printf("内核代码不可能缺页\n");
+        return;
+    }
+    if(address - current->start_code > TASK_SIZE){
+        printf("address超出限度\n");
+        return;
+    }
+    page = *(unsigned int*) ((address >> 20) & 0xffc);
+    if(page & 1){
+        page &= 0xfffff000;
+        page += (address >> 10) & 0xffc;
+        //页表项内容
+        tmp = *(unsigned int*) page;
+        if(tmp && !(1 & tmp)){
+            swap_in((unsigned int*) page);
+            return;
+        }
+    }
+    //算线性地址相对于执行文件映像的偏移值
+    address &= 0xfffff000;
+    tmp = address - current->start_code;
+    if(tmp >= LIBRARY_OFFSET){
+        inode = current->library;
+        block = 1 + tmp / BLOCK_SIZE;
+    }else if(tmp < current->end_data){
+        inode = current->executable;
+        block = 1 + tmp / BLOCK_SIZE;
+    }else{
+        inode = NULL;
+        block = 0;
+    }
+    //如果进程是访问动态申请的页面或者存放栈信息而引起的缺页，inode = NULL
+    if(!inode){
+        get_empty_page(address);
+        return;
+    }
+    if(share_page(inode, tmp))
+        return;
+    if(!(page = get_free_page())){
+        printf("内存不够\n");
+        return;
+    }
+    for(i = 0; i<4; block++,i++){
+        nr[i] = bmap(inode, block);
+    }
+    bread_page(page, inode->i_dev, nr);
+    //将多出end_data部分数据清零
+    i = tmp + 4096 - current->end_data;
+    if(i > 4095)
+        i = 0;
+    tmp = page + 4096;
+    while(i-- > 0){
+        tmp--;
+        *(char * )tmp = 0;
+    }
+    if(put_page(page, address))
+        return;
+    free_page(page);
+}
+
+//内存初始化函数
+//start_mem是主存开始的位置，end_mem一般是16mb
+//将1-16MB空间的内存页先置１００后将主存内存页清零
+void mem_init(int start_mem, int end_mem){
+    int i;
+    HIGH_MEMORY = end_mem;
+    for(i = 0 ; i < PAGING_PAGES ; i++){
+        mem_map[i] = USED;
+    }
+    i = MAP_NR(start_mem);
+    end_mem -= start_mem;
+    end_mem >> 12;
+    while(end_mem-- > 0){
+        mem_map[i++] = 0;
+    }
+}
+
+
+//内核调试可用于键盘中断处理
+void show_mem(void){
+    int i,j,k,free=0,total=0;
+    int shared=0;
+    unsigned int * pg_tbl;
+    printf("内存信息：\n");
+    for(i =0; i<PAGING_PAGES; i++){
+        if(mem_map[i] == USED){
+            continue;
+        }
+        total++;
+        if(!mem_map[i])
+            free++;
+        else
+            shared += mem_map[i] - 1;
+    }
+    printf("空闲页数量:%d;内存共有%d页\n", free, total);
+    printf("共享页数量:%d", shared);
+    k = 0;
+    for(i = 4; i<1024; ){
+        if(1&pg_dir[i]){
+            if(pg_dir[i] > HIGH_MEMORY){
+                printf("第%d页目录项不正常\n", i);
+                i++;
+                continue;
+            }
+            if(pg_dir[i] > LOW_MEM)
+                free++,k++;
+            pg_tbl = (unsigned int *) (0xfffff000 & pg_dir[i]);
+            for(j=0; j<1024; j++){
+                if(pg_tbl[j]&1 && pg_tbl[j] > LOW_MEM){
+                    if(pg_tbl[j] > HIGH_MEMORY){
+                        printf("第%d页表项不正常\n", j);
+                    }else{
+                        k++,free++;
+                    }
+                }
+            }
+        }
+        i++;
+        if(!(i&15) && k){
+            k++, free++;
+            printf("进程%d: %d页", (i>>4)-1 , k);
+        }
+    }
+    printf("内存中正在使用的页面数: %d (%d)\n", free - shared, total);
+}
