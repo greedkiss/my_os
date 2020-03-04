@@ -9,7 +9,7 @@ memory.h中定义read_swap_page 从交换分区读内存页接口未完成，也
 LOW_MEM还是应该定义为0x100000，所有的addr线性地址减去RAM
 ### 3.4
 引用了TASK_SIZE和current 当前进程块指针，还有读交换分区未完成  
-当前struct task_struct（进程数据结构）还未定义，当前m_inode未定义（内存i节点）
+当前struct task_struct（进程数据结构）还未定义，当前m_inode未定义（内存i节点)  
 任务数组未定义, FIRST_TASK和LASK_TASK未定义，library_offset未定义，进程印象偏移值之上为库文件，之下为可执行文件  
 bmap() bread_page()未定义，他们是从磁盘中读取文件块  
 缺页处理的三种情况１.从交换分区读２.和其他进程共享3.从磁盘读(可能是库文件也可能是可执行文件)  
