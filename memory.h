@@ -36,6 +36,34 @@ extern unsigned int HIGH_MEMORY;
 
 extern unsigned char mem_map [ PAGING_PAGES ];
 
+//复制４kb页
+extern int copy_page(char* from, char* to);
+
+extern void free_page(unsigned int addr);
+
+extern int free_page_tables(unsigned int from, unsigned int size);
+
+extern int copy_page_tables(unsigned int from, unsigned int to, int size);
+
+extern unsigned int put_page(unsigned int page, unsigned int address);
+
+extern unsigned int put_dirty_page(unsigned int page, unsigned int address);
+
+extern void un_wp_page (unsigned int * table_entry);
+
+extern void do_wp_page(unsigned int error_code, unsigned int address);
+
+extern void write_verify(unsigned int address);
+
+extern void get_empty_page(unsigned int address);
+
+extern void do_no_page(unsigned int error_code, unsigned int address);
+
+extern void mem_init(int start_mem, int end_mem);
+
+extern void show_mem(void);
+
+
 //页目录表和页表的标志位
 #define PAGE_DIRTY 0x40
 #define PAGE_ACCESED 0x20
