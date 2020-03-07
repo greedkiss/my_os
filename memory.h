@@ -1,7 +1,9 @@
 #ifndef _MEMORY_H
 #define _MEMORY_H
 
+
 #include "myRAM.h"
+#include "swap.h"
 
 #define PAGE_SIZE 4096
 
@@ -21,8 +23,9 @@ void swap_free(int page_nr);
 void swap_in(unsigned int* table_ptr);
 
 extern unsigned int HIGH_MEMORY;
+
 //物理内存最低端，RAM是申请的１６MB内存空间地址
-#define LOW_MEM  0x100000
+#define LOW_MEM 0x100000
 
 //15MB的可用内存空间
 #define PAGING_MEMORY (15*1024*1024)

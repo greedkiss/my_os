@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 //物理地址起始位置
 extern const char* RAM;
 
