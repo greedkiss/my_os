@@ -94,6 +94,39 @@
         struct tss_struct tss;
     };
 
+    //手动创建任务0
+    #define INIT_TASK \
+    { 0, 15, 15, \
+    0, {{},}, 0, \
+    0,0,0,0,0,0,\
+    0,0,0,0,\
+    {NOGROUP, },\
+    &init_task.task,0,0,0,\
+    0,0,0,0,0,0,\
+    0,0,0,0,0,0,0,\
+    {{0x7fffffff, 0x7fffffff},{0x7fffffff, 0x7fffffff},\
+    {0x7fffffff, 0x7fffffff}, {0x7fffffff, 0x7fffffff}\
+    {0x7fffffff, 0x7fffffff},{0x7fffffff, 0x7fffffff}},\
+    0,\
+    -1, 0022, NULL, NULL, NULL, NULL, 0,\
+    {NULL,},\
+    {\
+        {0,0},\
+        {0x9f, 0xc0fa00},\
+        {0x9f, 0xc0f200},\
+    },\
+    {0, PAGE_SIZE + (int)&init_task, 0x10, 0,0,0,0,(int)&pg_dir,\
+    0,0,0,0,0,0,0,0,\
+    0,0,0x17,0x17,0x17,0x17,0x17,0x17,\
+    _LDT(0),0x80000000,\
+    {}\
+    },\
+    }
+
+    extern struct task_struct *current;
+    extern unsigned int jiffies;
+    extern unsigned int startup_time;
+    extern int jiffies_offset;
 
 
 #endif
