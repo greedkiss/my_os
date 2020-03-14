@@ -1,6 +1,8 @@
 #ifndef _SCHED_H
 #define _SCHED_H
     
+    //寄存器
+    unsigned int TR;
     //系统中最多进程数,总进程数×每个任务长度=4GB
     #define NR_TASKS 64
     //每个任务长度逻辑地址 64MB
@@ -8,13 +10,13 @@
     //动态加载库长度
     #define LIBRARY_SIZE 0x00400000
     //进程逻辑地址空间中，动态库被加载的位置
-    #define LIBRARY_OFFSET (TASK_SIZE - LIBRARY_SIZE);
+    #define LIBRARY_OFFSET (TASK_SIZE - LIBRARY_SIZE)
 
     extern struct task_struct * task[NR_TASKS];
 
-    #define FIRST_TASK task[0];
+    #define FIRST_TASK task[0]
 
-    #define LAST_TASK[NR_TASKS - 1];
+    #define LAST_TASK task[NR_TASKS - 1]
 
     #define TASK_RUNNING 0 // 进程正在运行或者已经准备就绪
     #define TASK_INTERRUPTIBLE 1 //可中断等待状态
@@ -127,6 +129,19 @@
     extern unsigned int jiffies;
     extern unsigned int startup_time;
     extern int jiffies_offset;
+
+    //全局表地址 null, cs, ds, systemcall, tss0, ldt0,tss1, ldt1
+    #define FIRST_TSS_ENTRY 4
+    #define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY + 1)
+    #define _TSS(n) ((((unsigned int )n) << 4) + (FIRST_TSS_ENTRY) << 3 )
+    #define _LDT(n) ((((unsigned int )n) << 4) + (FIRST_LDT_ENTRY) << 3 )
+
+    //把第n个任务的tss加载到TR
+    // #define ltr(n) (TR = (unsigned int)(* ))
+
+
+
+
 
 
 #endif
