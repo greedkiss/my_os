@@ -23,4 +23,5 @@ blk_size[MAJOR(SWAP_DEV)][MINOR(SWAP_DEV)]取数据块总数（外存以1KB为�
 增加进程调试信息，show_state,可用作键盘驱动  
 有define LATCH 初始化8253芯片,用c语言时间类库来代替8253  
 定义current 即当前运行任务指针和任务数组task  
-定义了schedul调度函数， 引用<font color=red>switch_to未定义</font>
+定义了schedul调度函数， 引用<font color=red>switch_to未定义</font>  
+系统调用**do_timer() sys_alarm()** 和 初始化程序**sched_init()**

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "myram.h": "c"
+        "myram.h": "c",
+        "signal.h": "c"
     }
 }
