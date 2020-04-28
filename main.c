@@ -1,16 +1,20 @@
 #include "myRAM.h"
 #include "head.h"
+#include "trap.h"
 
 void (*fun)();
 
 int main(int argc, char** argv){
     //获取16MB内存空间
     getmyRAM();
-
-    setup_idt();
-    unsigned long long* address =(unsigned long long*)RAM + IDTR;
-    fun = (void *)(*(address + 3));
-    (*fun)();
+    //设置ldt,gdt and pageing
+    startup_32();
+    //中断向量表初始化
+    trap_init();
+    
+    // unsigned long long* address =(unsigned long long*)RAM + IDTR;
+    // fun = (void *)(*(address + 2));
+    // (*fun)();
 
     return 0;
 }

@@ -43,7 +43,7 @@ void setup_paging(){
     //页表
     unsigned int * base_pg0 = (unsigned int *)RAM + pg0;
     unsigned int pg_des = 0xfff007;
-    for(int i = (1024*4-1); pg_des >= 0; i--){
+    for(int i = (1024*4-1); i >= 0; i--){
         *(base_pg0 + i) = pg_des;
         pg_des -= 0x1000;
     }
