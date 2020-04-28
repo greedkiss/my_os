@@ -3,8 +3,9 @@
 
 
 #include <unistd.h>
-#include <sched.h>
+#include "sched.h"
 
+//10ms
 void do_timer(){
     while(1){
         usleep(10000);
