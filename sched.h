@@ -1,6 +1,10 @@
 #ifndef _SCHED_H
 #define _SCHED_H
     
+    #ifndef PAGE_SIZE
+    #define PAGE_SIZE 4096 
+    
+    #endif // !1
     //寄存器
     unsigned int TR;
     //系统中最多进程数,总进程数×每个任务长度=4GB

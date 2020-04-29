@@ -2,8 +2,9 @@
 #define _MEMORY_H
 
 
-#include "myRAM.h"
+// #include "myRAM.h"
 #include "swap.h"
+#include "sched.h"
 
 #define PAGE_SIZE 4096
 
