@@ -17,6 +17,16 @@ int copy_page(char* from, char* to){
     return 1;
 }
 
+//获取空闲页
+unsigned int get_free_page(){
+    int i = 0;
+    for( ; i < PAGING_PAGES; i++ ){
+        if(mem_map[i] == 0)
+            break;
+    }
+    return LOW_MEM + i<<12;
+}
+
 //释放addr线性地址所在的内存页
 void free_page(unsigned int addr){
     if(addr < LOW_MEM) return;
@@ -258,7 +268,7 @@ static int share_page(struct m_inode * inode , unsigned int address){
     //inode->i_count < 2 表示只有一个进程在运行该文件，所有找不到其他进程
     if(inode->i_count < 2 || !inode)
         return 0;
-    for(p = &LASK_TASK ; p > &FIRST_TASK ; --p){
+    for(p = &LAST_TASK ; p > &FIRST_TASK ; --p){
         if(!*p)
             continue;
         if(current == *p)
