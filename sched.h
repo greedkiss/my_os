@@ -95,7 +95,8 @@
         unsigned int close_on_exec;
         struct file * filp[NR_OPEN];
 
-        struct desc_struct ldt[3];
+        // struct desc_struct ldt[3];
+        unsigned long long ldt[3];
 
         struct tss_struct tss;
     };

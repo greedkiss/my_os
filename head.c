@@ -20,15 +20,15 @@ void setup_idt(){
 
 //init gdt
 void setup_gdt(){
-    unsigned long long * base_idt = (unsigned long long *)RAM + GDTR;
+    unsigned long long * base_gdt = (unsigned long long *)RAM + GDTR;
     unsigned long long code = 0x00c09a0000000fff;
     unsigned long long data = 0x00c0920000000fff;
     //第一个描述符为NULL
-    *base_idt = 0;
+    *base_gdt = 0;
     //第二个为内核代码段描述符
-    *(base_idt+1) = code;
+    *(base_gdt+1) = code;
     //第三个是内核数据段描述符
-    *(base_idt+2) = data;
+    *(base_gdt+2) = data;
 }
 
 //设置一个内存页目录表和四个内存页表
@@ -53,4 +53,14 @@ void startup_32(){
     setup_idt();
     setup_gdt();
     setup_paging();
+}
+
+
+//设置全局描述表
+void set_tss_desc(unsigned long long* base, unsigned long long addr){
+    *base = addr;
+}
+
+void set_ldt_desc(unsigned long long* base, unsigned long long addr){
+    *base = addr;
 }

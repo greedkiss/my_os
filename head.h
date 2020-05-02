@@ -21,4 +21,7 @@ extern const char* RAM;
 
 extern void startup_32();
 
+extern void set_tss_desc();
+
+extern void set_ldt_desc(); 
 #endif 

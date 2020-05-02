@@ -1,17 +1,7 @@
 #include "swap.h"
 
-#define SWAP_BITS (4096 << 3)
-
+//交换分区位视图
 static char * swap_bitmap = NULL;
-
-//交换设备号
-int SWAP_DEV = 0;
-
-//0~64mb为内核空间，不会被交换出去
-//0.12逻辑地址空间为４ＧＢ
-#define FIRST_VM_PAGE (TASK_SIZE >> 12)
-#define LAST_VM_PAGE (1024*1024)
-#define VM_PAGES (LAST_VM_PAGE - FIRST_VM_PAGE)
 
 //检查bit位
 int bit(char * a, int b){
@@ -157,6 +147,21 @@ int swap_out(void){
     return 0;
 }
 
+void init_swap_disk(){
+    FILE* swap;
+    if((swap = fopen(SWAP_DISK, "r+")) == NULL){
+        fclose(swap);
+        printf("交换设备初始化失败\n");
+    }else{
+        char buffer[4096];
+        memset(buffer, 255, sizeof(buffer));
+        fseek(swap, 0, SEEK_SET);
+        fwrite(buffer, strlen(buffer), 1, swap);
+    }
+}
+
 void init_swapping(void){
+    init_swap_disk();
+
     
 }
