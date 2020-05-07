@@ -29,10 +29,10 @@ void show_state(void){
     }
 }
 
-//时钟中断处理程序
-extern int time_interrupt(void);
+// //时钟中断处理程序
+// extern int time_interrupt(void);
 //系统调用中断处理程序
-extern int system_call(void);
+// extern int system_call(void);
 
 union task_union {
     struct task_struct task;
@@ -49,7 +49,7 @@ unsigned int startup_time = 0;
 int jiffies_offset = 0;
 
 struct task_struct * current = &(init_task.task);
-struct task_struct * last_task_used_math ;
+// struct task_struct * last_task_used_math ;
 
 struct task_struct * task[NR_TASKS] = {&(init_task.task), };
 
@@ -182,5 +182,6 @@ int sys_getegid(void){
 void sched_init(void){
     int i;
     struct desc_struct * p;
+    
     
 }
