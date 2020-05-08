@@ -6,7 +6,7 @@ int sys_sgetmask(){
 }
 
 //设置新的信号屏蔽位图
-int sys_ssetmask(int newmask){
+int sys_setmask(int newmask){
     int old = current->blocked;
     current->blocked = newmask & ~(1<<(SIGKILL-1)) & ~(1<<(SIGSTOP-1));
     return old;

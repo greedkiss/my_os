@@ -39,7 +39,7 @@ union task_union {
     char stack[PAGE_SIZE];
 };
 
-static union task_union init_task = {INIT_TASK, };
+static union task_union init_task = {INIT_TASK};
 
 //从开机算起的时间滴答值
 unsigned int jiffies = 0;
@@ -47,6 +47,9 @@ unsigned int jiffies = 0;
 unsigned int startup_time = 0;
 
 int jiffies_offset = 0;
+
+//switch_to切换的进程号
+int next;
 
 struct task_struct * current = &(init_task.task);
 // struct task_struct * last_task_used_math ;
@@ -61,8 +64,21 @@ struct {
     short b;
 }stack_start = {&user_stack [PAGE_SIZE>>2], 0x10};
 
+void exec_switch_to(unsigned long long* ret_addr){
+    *ret_addr = task[next]->tss.entry;
+}
+
+void switch_to(){
+    __asm__("lea 8(%%rbp), %%rdi\n\t"
+        "pushq %%rdi\n\t"
+        "call exec_switch_to\n\t"
+        "leave\n\t"
+        "ret\n\t"
+        :::);
+}
+
 void schedule(void){
-    int i, next, c;
+    int i, c;
     struct task_struct ** p;
     for(p = &LAST_TASK ; p > &FIRST_TASK ; --p){
         if(*p){
@@ -73,7 +89,7 @@ void schedule(void){
                 }
             }
         }
-        //SIGALRM的操作是终止进程
+        // SIGALRM的操作是终止进程
         if((*p)->alarm && (*p)->alarm < jiffies){
             (*p)->signal |= (1<<(SIGALRM-1));
             (*p)->alarm = 0;
@@ -101,7 +117,7 @@ void schedule(void){
             }
         }
     }
-    switch_to(next);
+    switch_to();
 }
 
 //pause系统调用，转换当前任务位可终端等待状态
@@ -178,10 +194,26 @@ int sys_getegid(void){
     return current->egid;
 }
 
+void first_proc(){
+    printf("第一个进程初始化成功\n");
+    show_state();
+    while(1);
+}
+
 //调度程序初始化
 void sched_init(void){
     int i;
-    struct desc_struct * p;
-    
-    
+    unsigned long long * p;
+    unsigned long long * base_gdt = (unsigned long long *)RAM + GDTR;
+    *(base_gdt + FIRST_TSS_ENTRY) = &init_task.task.tss;
+    *(base_gdt + FIRST_LDT_ENTRY) = &init_task.task.ldt;
+    p = base_gdt + 2 + FIRST_TSS_ENTRY;
+    for(i = 1; i<NR_TASKS; i++){
+        task[i] = NULL;
+        p = 0;
+        p++;
+        p = 0;
+    }
+    task[0]->tss.entry = (unsigned long long *) &first_proc;
+    switch_to();
 }

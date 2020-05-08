@@ -11,6 +11,7 @@ void do_debug(){
 void do_nmi(){
     printf("nmi中断\n");
 }
+
 void overflow(){
     printf("溢出\n");
 }

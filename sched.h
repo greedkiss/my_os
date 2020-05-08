@@ -2,6 +2,7 @@
 #define _SCHED_H
 
     #include "head.h"
+    #include "signal.h"
     
     #ifndef PAGE_SIZE
     #define PAGE_SIZE 4096 
@@ -33,8 +34,7 @@
     #ifndef NULL
         #define NULL ((void *) 0)
     #endif
-
-    extern void schedule(void);
+    // extern void schedule(void);
 
     typedef int (*fn_ptr)();
 
@@ -68,6 +68,12 @@
     //     int ldt;
     //     int trace_bitmap;
     // };
+    struct my_sigaction{
+        void (*sa_handler) (int);
+        unsigned int sa_mask;
+        int sa_flags;
+        void (*sa_restorer) (void);
+    };
 
     //pcb
     struct task_struct{
@@ -75,7 +81,7 @@
         int counter; //运行计数
         int priority; //进程优先级
         int signal; //信号32位
-        // struct sigaction sigaction[32]; //信号入口
+        struct my_sigaction sigaction[32]; //信号入口
         int blocked;//信号屏蔽码
 
         int exit_code; //退出码,由父进程获取
@@ -139,7 +145,7 @@
 
     #define INIT_TASK \
     {0, 15, 15,\
-    0,0,\
+    0,{{},},0,\
     0,0,0,0,0,0,\
     0,0,0,0,\
     &init_task.task,0,0,0,\
@@ -147,7 +153,7 @@
     0,0,\
  /*flag*/   0,\
     {0,0,0},\
-    {_LDT(0),0}},
+    {_LDT(0), 0}},
 
     extern struct task_struct *current;
     extern unsigned int jiffies;
@@ -165,7 +171,9 @@
 
 
     //task任务数组
-    extern struct task_struct * task[NR_TASKS] = {&(init_task.task), };
+    extern struct task_struct * task[NR_TASKS];
+
+    extern void sched_init(void);
 
 
 
