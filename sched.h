@@ -175,6 +175,8 @@
 
     extern void sched_init(void);
 
+    extern void switch_to();
+
 
 
 
