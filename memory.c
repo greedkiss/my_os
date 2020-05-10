@@ -378,6 +378,7 @@ void show_mem(void){
     int i,j,k,free=0,total=0;
     int shared=0;
     unsigned int * pg_tbl;
+    unsigned long long * base_dir = (unsigned long long *)RAM + pg_dir;
     printf("内存信息：\n");
     for(i =0; i<PAGING_PAGES; i++){
         if(mem_map[i] == USED){
@@ -393,15 +394,15 @@ void show_mem(void){
     printf("共享页数量:%d", shared);
     k = 0;
     for(i = 4; i<1024; ){
-        if(1&pg_dir[i]){
-            if(pg_dir[i] > HIGH_MEMORY){
+        if(1&base_dir[i]){
+            if(base_dir[i] > HIGH_MEMORY){
                 printf("第%d页目录项不正常\n", i);
                 i++;
                 continue;
             }
-            if(pg_dir[i] > LOW_MEM)
+            if(base_dir[i] > LOW_MEM)
                 free++,k++;
-            pg_tbl = (unsigned int *) (0xfffff000 & pg_dir[i]);
+            pg_tbl = (unsigned int *) (0xfffff000 & base_dir[i]);
             for(j=0; j<1024; j++){
                 if(pg_tbl[j]&1 && pg_tbl[j] > LOW_MEM){
                     if(pg_tbl[j] > HIGH_MEMORY){

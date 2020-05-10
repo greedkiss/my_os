@@ -28,3 +28,23 @@ void ll_write_block(struct buffer_head* bh){
     }
     bh->b_dirt = 0;
 }
+
+//读交换分区
+void read_swap_page(int nr, char * buffer){
+    if((rw = fopen(SWAP_DISK, "r+")) == NULL){
+        printf("读交换分区失败\n");
+    }
+    fseek(rw, 4096*nr, SEEK_SET);
+    fread(buffer, 4096, 1, rw);
+    fclose(rw);
+}
+
+//写交换分区
+void write_swap_page(int nr, char * buffer){
+    if((rw = fopen(SWAP_DISK, "r+")) == NULL){
+        printf("读交换分区失败\n");
+    }
+    fseek(rw, 4096*nr, SEEK_SET);
+    fwrite(buffer, 4096, 1, rw);
+    fclose(rw);
+}

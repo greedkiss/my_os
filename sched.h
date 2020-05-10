@@ -109,7 +109,6 @@
         unsigned int close_on_exec;
         struct file * filp[NR_OPEN];
 
-        // struct desc_struct ldt[3];
         unsigned int ldt[3];
 
         struct tss_struct tss;
@@ -153,6 +152,8 @@
     0,0,0,0,0,0,\
     0,0,\
  /*flag*/   0,\
+    0022,NULL,NULL,NULL,NULL,0,\
+    {NULL,},\
     {0,0,0},\
     {_LDT(0), 0}},
 

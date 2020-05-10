@@ -3,6 +3,7 @@
 
 #include "init.h"
 #include <stdio.h>
+#include "swap.h"
 
 extern void ll_read_block(struct buffer_head* bh);
 

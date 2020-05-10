@@ -2,6 +2,7 @@
 #include "head.h"
 #include "trap.h"
 #include "sched.h"
+#include "swap.h"
 
 void (*fun)();
 
@@ -14,6 +15,17 @@ int main(int argc, char** argv){
     trap_init();
     //进程初始化
     sched_init();
+    //初始化文件为ext2文件系统
+    initFileSys();
+    //初始化buffer
+    getBuffer();
+    initBuffer();
+    //挂载根文件系统
+    mount_root();
+    //手动创建根目录
+    sys_mkdir("/",0777);
+    //初始化交换分区
+    init_swapping();
     
     
     // unsigned long long* address =(unsigned long long*)RAM + IDTR;

@@ -107,12 +107,13 @@ int try_to_swap_out(unsigned int * table_ptr){
 
 //当内存满的时候调用，将内存页交换出去
 int swap_out(void){
+    unsigned long long * base_dir = (unsigned long long *) RAM + pg_dir;
     static int dir_entry = FIRST_VM_PAGE >> 10;
     static int page_entry = -1;
     int counter = VM_PAGES;
     int pg_table;
     while(counter > 0){
-        pg_table = pg_dir[dir_entry];
+        pg_table = base_dir[dir_entry];
         if(pg_table & 1)
             break;
         counter -= 1024;
@@ -130,7 +131,7 @@ int swap_out(void){
             dir_entry++;
             if(dir_entry >= 1024)
                 dir_entry = FIRST_VM_PAGE >> 10;
-            pg_table = pg_dir[dir_entry];
+            pg_table = base_dir[dir_entry];
             if(!(pg_table&1)){
                 if((counter -= 1024) > 0)
                     goto repeat;

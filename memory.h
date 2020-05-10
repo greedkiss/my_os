@@ -4,7 +4,9 @@
 
 #include "myRAM.h"
 #include "swap.h"
+#include "head.h"
 #include "sched.h"
+#include "rwblock.h"
 
 #define PAGE_SIZE 4096
 
@@ -12,8 +14,8 @@
 extern int SWAP_DEV;
 
 //从交换分区读写内存页
-#define read_swap_page(nr, buffer) ll_rw_page(READ, SWAP_DEV, (nr), (buffer))
-#define write_swap_page(nr, buffer) ll_rw_page(WRITE, SWAP_DEV, (nr), (buffer))
+// #define read_swap_page(nr, buffer) ll_rw_page(READ, SWAP_DEV, (nr), (buffer))
+// #define write_swap_page(nr, buffer) ll_rw_page(WRITE, SWAP_DEV, (nr), (buffer))
 
 extern unsigned int get_free_page(void);
 
