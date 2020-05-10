@@ -66,6 +66,7 @@ struct {
 
 void exec_switch_to(unsigned long long* ret_addr){
     *ret_addr = task[next]->tss.entry;
+    current = task[next];
 }
 
 void switch_to(){

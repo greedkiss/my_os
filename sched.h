@@ -3,6 +3,7 @@
 
     #include "head.h"
     #include "signal.h"
+    #include "fs.h"
     
     #ifndef PAGE_SIZE
     #define PAGE_SIZE 4096 
@@ -100,13 +101,13 @@
 
         //文件系统部分先注释调试
         // int tty;//进程使用的tty终端子设备号
-        // unsigned short umask;
-        // struct m_inode * pwd;
-        // struct m_inode * root;
-        // struct m_inode * executable;
-        // struct m_inode * library;
-        // unsigned int close_on_exec;
-        // struct file * filp[NR_OPEN];
+        unsigned short umask;
+        struct m_inode * pwd;
+        struct m_inode * root;
+        struct m_inode * executable;
+        struct m_inode * library;
+        unsigned int close_on_exec;
+        struct file * filp[NR_OPEN];
 
         // struct desc_struct ldt[3];
         unsigned int ldt[3];
