@@ -1,3 +1,6 @@
 core
 *.gch
 0ext2
+obj/*
+swap
+1ext2

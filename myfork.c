@@ -79,19 +79,19 @@ void copy_process(){
        free_page((unsigned int)p);
        printf("复制页表出错\n");
     }
-    //文件系统部分
-    // for(i = 0; i < NR_OPEN; i++){
-    //     if(f = p->filp[i])
-    //         f->f_count++;
-    // }
-    // if(current->pwd)
-    //     current->pwd->i_count++;
-    // if(current->root)
-    //     current->root->i_count++;
-    // if(current->executable)
-    //     current->executable->i_count++;
-    // if(current->library)
-    //     current->library->i_count++;
+    文件系统部分
+    for(i = 0; i < NR_OPEN; i++){
+        if(f = p->filp[i])
+            f->f_count++;
+    }
+    if(current->pwd)
+        current->pwd->i_count++;
+    if(current->root)
+        current->root->i_count++;
+    if(current->executable)
+        current->executable->i_count++;
+    if(current->library)
+        current->library->i_count++;
     p->p_pptr = current;
     p->p_cptr = 0;
     p->p_ysptr = 0;
