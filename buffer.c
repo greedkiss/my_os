@@ -154,6 +154,37 @@ struct buffer_head* bread(int dev, int block){
     brelse(bh);
     return NULL;
 }
+
+//copy1024kb
+#define copy_blk(from, to)\
+__asm__("cld\n\t"\
+        "rep\n\t"\
+        "movsl\n\t"\
+        ::"c"(BLOCK_SIZE/4), "S" (from),"D" (to):)
+
+void bread_page(unsigned int address, int dev, int b[4]){
+    struct buffer_head * bh[4];
+    int i;
+    for(i=0; i<4; i++){
+        if(b[i]){
+            if(bh[i] = getblk(dev, b[i])){
+                if(!bh[i]->b_uptodate)
+                    ll_read_block(bh[i]);
+            }
+        }else{
+            bh[i] = NULL;
+        }
+    }
+    for(i=0;i<4;i++,address+=BLOCK_SIZE){
+        if(bh[i]){
+            if(bh[i]->b_uptodate)
+                copy_blk((unsigned int)bh[i]->b_data, address);
+            brelse(bh[i]);
+        }
+    }
+
+}
+
 //从hash表中找数据，引用计数加1
 struct buffer_head* get_hash_table(int dev, int block){
     struct buffer_head* bh;

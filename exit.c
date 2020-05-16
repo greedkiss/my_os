@@ -6,7 +6,6 @@ void release(struct task_struct * p){
     if(!p)
         return;
     if(p == current){
-        printf("");
     }
     for(i = 1; i<NR_TASKS ; i++){
         if(task[i] == p){
@@ -34,7 +33,7 @@ int bad_task_ptr(struct task_struct * p){
 //发送信号
 int send_sig(int sig, struct task_struct *p){
     if(!p)
-        return;
+        return 0;
     if((sig == SIGKILL)){
         if(p->state == TASK_STOPPED)
             p->state = TASK_RUNNING;
@@ -52,7 +51,7 @@ int kill_pg(int pgrp, int sig){
     struct task_struct ** p;
     int found = 0;
     if(sig<1 || sig>32 || pgrp<=0)
-        return;
+        return 0;
     for(p = &LAST_TASK ; p>&FIRST_TASK; --p){
         if((*p)->pgrp == pgrp){
             send_sig(sig, *p);

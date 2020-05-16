@@ -37,6 +37,8 @@
     #endif
     // extern void schedule(void);
 
+    extern void schedule(void);
+
     typedef int (*fn_ptr)();
 
     //本系统不考虑协处理器,存储各寄存器值

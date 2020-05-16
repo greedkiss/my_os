@@ -163,6 +163,10 @@ void init_swap_disk(){
 
 void init_swapping(void){
     init_swap_disk();
-
-    
+    swap_bitmap = (char * )get_free_page();
+    if(!swap_bitmap){
+        printf("交换分区初始化失败\n");
+        return;
+    }
+    read_swap_page(0, swap_bitmap);
 }

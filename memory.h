@@ -10,13 +10,6 @@
 
 #define PAGE_SIZE 4096
 
-//内存页交换设备号
-extern int SWAP_DEV;
-
-//从交换分区读写内存页
-// #define read_swap_page(nr, buffer) ll_rw_page(READ, SWAP_DEV, (nr), (buffer))
-// #define write_swap_page(nr, buffer) ll_rw_page(WRITE, SWAP_DEV, (nr), (buffer))
-
 extern unsigned int get_free_page(void);
 
 extern unsigned int put_dirty_page(unsigned int page, unsigned int address);
@@ -37,7 +30,7 @@ extern unsigned int HIGH_MEMORY;
 #define MAP_NR(addr) (((addr) - LOW_MEM) >> 12)
 #define USED 100
 
-extern unsigned char mem_map [ PAGING_PAGES ];
+unsigned char mem_map [ PAGING_PAGES ];
 
 //复制４kb页
 extern int copy_page(char* from, char* to);

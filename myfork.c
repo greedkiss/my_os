@@ -60,7 +60,7 @@ void copy_process(){
     struct task_struct * p;
     int i, nr;
     //文件结构体
-    // struct file * f;
+    struct file * f;
     p = (struct task_struct *)get_free_page();
     if(!p)
         printf("申请pcb空间失败\n");
@@ -79,7 +79,6 @@ void copy_process(){
        free_page((unsigned int)p);
        printf("复制页表出错\n");
     }
-    文件系统部分
     for(i = 0; i < NR_OPEN; i++){
         if(f = p->filp[i])
             f->f_count++;

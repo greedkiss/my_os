@@ -3,6 +3,10 @@
 #include "trap.h"
 #include "sched.h"
 #include "swap.h"
+#include "myMemory.h"
+#include "buffer.h"
+#include "super.h"
+#include "namei.h"
 
 void (*fun)();
 
@@ -13,8 +17,6 @@ int main(int argc, char** argv){
     startup_32();
     //中断向量表初始化
     trap_init();
-    //进程初始化
-    sched_init();
     //初始化文件为ext2文件系统
     initFileSys();
     //初始化buffer
@@ -26,7 +28,9 @@ int main(int argc, char** argv){
     sys_mkdir("/",0777);
     //初始化交换分区
     init_swapping();
-    
+     //进程初始化
+    sched_init();
+
     
     // unsigned long long* address =(unsigned long long*)RAM + IDTR;
     // fun = (void *)(*(address + 2));

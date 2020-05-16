@@ -12,7 +12,6 @@
 
 
 //交换设备号
-int SWAP_DEV = 0;
 
 #define SWAP_DISK "/home/flipped/code/my_os/swap"
 

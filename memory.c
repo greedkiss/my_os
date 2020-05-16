@@ -123,7 +123,7 @@ int copy_page_tables(unsigned int from, unsigned int to, int size){
 
 //线性地址为address，内存页面为page，注意是由内存address映射到page上
 //也就是说是由线性地址查页目录表和页表得到的page
-static unsigned int put_page(unsigned int page, unsigned int address){
+unsigned int put_page(unsigned int page, unsigned int address){
     unsigned int tmp, *page_table;
     if(page < LOW_MEM || page >= HIGH_MEMORY)
         printf("不符合规范\n");
