@@ -102,5 +102,4 @@ void copy_process(){
     unsigned long long * base_gdt = (unsigned long long *)RAM + GDTR;
     set_tss_desc(base_gdt+(nr<<1) + FIRST_TSS_ENTRY, (unsigned long long)&(p->tss));
     set_ldt_desc(base_gdt+(nr<<1) + FIRST_LDT_ENTRY, (unsigned long long)&(p->ldt));
-    return last_pid;
 }
