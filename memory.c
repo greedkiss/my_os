@@ -24,7 +24,7 @@ unsigned int get_free_page(){
         if(mem_map[i] == 0)
             break;
     }
-    return LOW_MEM + i<<12;
+    return (unsigned long)RAM + LOW_MEM + (i<<12);
 }
 
 //释放addr线性地址所在的内存页

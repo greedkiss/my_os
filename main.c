@@ -19,6 +19,8 @@ int main(int argc, char** argv){
     trap_init();
     //初始化文件为ext2文件系统
     initFileSys();
+    //初始化交换分区
+    init_swapping();
     //初始化buffer
     getBuffer();
     initBuffer();
@@ -26,11 +28,15 @@ int main(int argc, char** argv){
     mount_root();
     //手动创建根目录
     sys_mkdir("/",0777);
-    //初始化交换分区
-    init_swapping();
-     //进程初始化
+   //创建目录
+    sys_mkdir("/bin", 0777 | S_IFDIR);
+    sys_mkdir("/boot", 0777 | S_IFDIR);
+    sys_mkdir("/dev", 0777 | S_IFDIR);
+    sys_mkdir("/etc", 0777 | S_IFDIR);
+    sys_mkdir("/home", 0777 | S_IFDIR);
+    sys_mkdir("/home/root", 0777 | S_IFDIR);
+    //进程初始化
     sched_init();
-
     
     // unsigned long long* address =(unsigned long long*)RAM + IDTR;
     // fun = (void *)(*(address + 2));

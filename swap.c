@@ -169,4 +169,5 @@ void init_swapping(void){
         return;
     }
     read_swap_page(0, swap_bitmap);
+    printf("交换分区初始化成功\n");
 }

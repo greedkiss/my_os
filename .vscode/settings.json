@@ -3,5 +3,10 @@
         "myram.h": "c",
         "signal.h": "c",
         "elf.h": "c"
-    }
+    },
+    // "editor.tokenColorCustomizations": {
+    //     "comments": "#dfe2e9",
+    //     "variables": "#f59e9e"
+    // }
+
 }

@@ -3,7 +3,7 @@
 
 #include "myRAM.h"
 
-extern const char* RAM;
+extern char* RAM;
 
 //idt中断描述符的基地址
 #define IDTR 0x6000;

@@ -196,9 +196,64 @@ int sys_getegid(void){
 }
 
 void first_proc(){
-    printf("第一个进程初始化成功\n");
-    show_state();
-    while(1);
+    printf("0号进程初始化成功\n");
+    checkuser();
+    while(1){
+        char cmd[50];
+        printf("%s$ ", loginuser);
+        scanf("%s", cmd);
+        if(!strcmp(cmd, "ls")){
+            list();
+            continue;
+        }
+        if(!strcmp(cmd, "mkdir")){
+            mkdir();
+            continue;
+        }
+        if(!strcmp(cmd, "touch")){
+            touch();
+            continue;
+        }
+        if(!strcmp(cmd, "exit")){
+            return 0;
+            continue;
+        }
+        if(!strcmp(cmd, "write")){
+            shell_write();
+            continue;
+        }
+        if(!strcmp(cmd, "read")){
+            shell_read();
+            continue;
+        }
+        if(!strcmp(cmd, "ln")){
+            ln();
+            continue;
+        }
+        if(!strcmp(cmd, "cd")){
+            cd();
+            continue;
+        }
+        if(!strcmp(cmd, "rm")){
+            rm();
+            continue;
+        }
+        if(!strcmp(cmd, "rmdir")){
+            rmdir();
+            continue;
+        }
+        if(!strcmp(cmd, "help")){
+            help();
+            continue;
+        }
+        //新增
+        
+        else{
+            printf("commond not found : %s\n", cmd);
+            printf("you can try help for help\n");
+        }
+    }
+
 }
 
 //调度程序初始化
@@ -215,6 +270,8 @@ void sched_init(void){
         p++;
         p = 0;
     }
+    task[0] = current;
+    current->pwd = current->root;
     task[0]->tss.entry = (unsigned long long *) &first_proc;
     switch_to();
 }
