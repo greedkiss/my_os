@@ -5,6 +5,9 @@
     #include "signal.h"
     #include "fs.h"
     #include "authorization.h"
+    #include "fcntl.h"
+    #include "open.h"
+    #include "cmd.h"
     
     #ifndef PAGE_SIZE
     #define PAGE_SIZE 4096 

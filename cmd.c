@@ -53,7 +53,7 @@ void shell_write(){
 
 void shell_read(){
     char name[50];
-    memset(name, 0, sizeof(50));
+    memset(name, 0, sizeof(name));
     int fd, off;
     // printf("请输入文件名称:\n");
     scanf("%s", name);
@@ -121,3 +121,78 @@ void help(){
     printf("read [文件] [偏移值]...读文件\n\n");
     printf("write [文件] [内容] [偏移值]\n\n");
 }
+
+void execcmd(char * cmd){
+    int i = 0, space = 0, j = 0, k = 0;
+    char op[4][20];
+    memset(op, 0, sizeof(op));
+    while(cmd[i]){
+        if(cmd[i] == '_'){
+            space++;
+            j++,i++;
+            k = 0;
+            continue;
+        }
+        op[j][k] = cmd[i];
+        k++;
+        i++;
+    }
+    if(!space)
+        list();
+    if(space == 1){
+        if(!strcmp(op[0], "mkdir")){
+            sys_mkdir(op[1], 0777 | S_IFDIR);
+        }
+        if(!strcmp(op[0], "cd")){
+           for(int i = 0; i < sizeof(op[1]); i++){
+                    if(!op[1][i]){
+                    op[1][i] = '/';
+                    op[1][i+1] = '.';
+                    break;
+                }
+            }
+            current->pwd =  get_dir(op[1], NULL);
+        }
+        if(!strcmp(op[0], "touch")){
+            hsc_creat(op[1], 0777 | S_IFREG);
+        }
+        if(!strcmp(op[0], "rm")){
+            if(!unlink(op[1])){
+                printf("删除失败!\n");
+            }
+        }
+        if(!strcmp(op[0], "rmdir")){
+            if(!d_rmdir(op[1])){
+                printf("删除失败\n");
+            }
+        }
+    }
+    printf("%d %s %s\n", space, op[1], op[0]);
+    if(space == 2){
+       if(!strcmp(op[0], "ln")){
+           int fd;
+           fd = hsc_creat(op[1], 0777 | S_IFLNK);
+           write(fd, op[2], 50);
+       }
+       if(!strcmp(op[0], "read")){
+           int fd, off;
+           off = op[2] - '0';
+           fd = hsc_open(op[1], O_RDWR, 0777);
+           lseek(fd, off, SEEK_SET);
+           read(fd, op[3], 50);
+           printf("%s\n 0000",op[3]);
+           printf("_____________文件内容\n");
+           printf("%s\n", op[3]); 
+       }
+    }
+    if(space == 3){
+        int fd, off;
+        off = op[3] - '0';
+        fd = hsc_open(op[1], O_RDWR, 0777);
+        lseek(fd, off, SEEK_SET);
+        write(fd, op[2], 50);
+        hsc_close(fd);
+    }
+
+}
+    

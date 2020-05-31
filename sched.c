@@ -247,13 +247,38 @@ void first_proc(){
             continue;
         }
         //新增
-        
+        if(cmd[0] == '.' && cmd[1] == '/'){
+            char buff[50];
+            memset(buff, 0, sizeof(buff));
+            int fd;
+            fd = hsc_open(cmd+2, O_RDWR, 0777);
+            lseek(fd, 0, SEEK_SET);
+            read(fd, buff, 50);
+            memset(cmd, 0, sizeof(cmd));
+            if(buff[0] == '#' && buff[1] == '!'){
+                //#!shell/touch text/ls
+                int i = 8, j = 0;
+                while(buff[i]){
+                    if(buff[i] != '/'){
+                        cmd[j] = buff[i];
+                        j++;
+                        i++;
+                        continue;
+                    }
+                    execcmd(cmd);
+                    memset(cmd, 0, sizeof(cmd));
+                    j = 0;
+                    i++;
+                }
+            }else{
+                printf("该文件不可执行\n");
+            }
+        } 
         else{
             printf("commond not found : %s\n", cmd);
             printf("you can try help for help\n");
         }
     }
-
 }
 
 //调度程序初始化

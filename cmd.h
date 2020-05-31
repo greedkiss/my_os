@@ -12,23 +12,25 @@
 #include "read_write.h"
 #include "sched.h"
 
-void list();
+extern void list();
 
-void mkdir();
+extern void mkdir();
 
-void touch();
+extern void touch();
 
-void shell_write();
+extern void shell_write();
 
-void shell_read();
+extern void shell_read();
 
-void ln();
+extern void ln();
 
-void cd();
+extern void cd();
 
-void rm();
+extern void rm();
 
-void rmdir();
+extern void rmdir();
 
-void help();
+extern void help();
+
+extern void execcmd();
 #endif 
