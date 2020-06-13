@@ -5,6 +5,15 @@
 #include <stdio.h>
 #include "swap.h"
 
+//请求项
+struct request{
+    int cmd;
+    int sector;
+    struct buffer_head * bh;
+};
+
+//
+
 extern void ll_read_block(struct buffer_head* bh);
 
 extern void ll_write_block(struct buffer_head* bh);

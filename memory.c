@@ -18,13 +18,14 @@ int copy_page(char* from, char* to){
 }
 
 //获取空闲页
-unsigned int get_free_page(){
+unsigned long long * get_free_page(){
     int i = 0;
     for( ; i < PAGING_PAGES; i++ ){
         if(mem_map[i] == 0)
             break;
     }
-    return (unsigned long)RAM + LOW_MEM + (i<<12);
+    mem_map[i]++;
+    return ((unsigned long long *)RAM + LOW_MEM + (i<<12));
 }
 
 //释放addr线性地址所在的内存页

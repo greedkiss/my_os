@@ -193,6 +193,28 @@ void execcmd(char * cmd){
         write(fd, op[2], 50);
         hsc_close(fd);
     }
-
 }
     
+void interruption(){
+    void (*fun)();
+    int n;
+    scanf("%d", &n);
+    unsigned long long* address =(unsigned long long*)RAM + IDTR;
+    fun = (void *)(*(address + n));
+    (*fun)();
+}
+
+void my_fork(){
+    int nr, count, num;
+    nr = copy_process();
+    scanf("%d", &num);
+    scanf("%d", &count);
+    task[nr]->counter = count;
+    if(num == 1){
+        task[nr]->tss.entry = (unsigned long long*) &second_proc;
+    }
+    if(num == 2){
+        task[nr]->tss.entry = (unsigned long long*) &third_proc;
+    }
+
+}

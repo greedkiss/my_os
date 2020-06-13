@@ -10,7 +10,7 @@
 
 #define PAGE_SIZE 4096
 
-extern unsigned int get_free_page(void);
+extern unsigned long long * get_free_page(void);
 
 extern unsigned int put_dirty_page(unsigned int page, unsigned int address);
 

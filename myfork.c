@@ -56,7 +56,7 @@ int copy_mem(int nr, struct task_struct * p){
 
 
 //复制进程
-void copy_process(){
+int copy_process(){
     struct task_struct * p;
     int i, nr;
     //文件结构体
@@ -74,11 +74,11 @@ void copy_process(){
     p->alarm = 0;
     // p->start_time = jiffies;
     p->tss.ldt = _LDT(nr);
-    if(copy_mem(nr, p)){
-       task[nr] = NULL;
-       free_page((unsigned int)p);
-       printf("复制页表出错\n");
-    }
+    // if(copy_mem(nr, p)){
+    //    task[nr] = NULL;
+    //    free_page((unsigned int)p);
+    //    printf("复制页表出错\n");
+    // }
     for(i = 0; i < NR_OPEN; i++){
         if(f = p->filp[i])
             f->f_count++;
@@ -102,4 +102,5 @@ void copy_process(){
     unsigned long long * base_gdt = (unsigned long long *)RAM + GDTR;
     set_tss_desc(base_gdt+(nr<<1) + FIRST_TSS_ENTRY, (unsigned long long)&(p->tss));
     set_ldt_desc(base_gdt+(nr<<1) + FIRST_LDT_ENTRY, (unsigned long long)&(p->ldt));
+    return nr;
 }

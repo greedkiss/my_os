@@ -7,7 +7,9 @@
 
 extern int last_pid;
 
-extern void copy_process();
+extern int copy_process();
+
+extern int find_empty_process();
 
 
 #endif 

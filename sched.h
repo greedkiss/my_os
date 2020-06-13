@@ -185,6 +185,10 @@
 
     extern void switch_to();
 
+    extern void second_proc();
+
+    extern void third_proc();
+
 
 
 

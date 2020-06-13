@@ -11,6 +11,10 @@
 #include "namei.h"
 #include "read_write.h"
 #include "sched.h"
+#include "myRAM.h"
+#include "head.h"
+#include "authorization.h"
+#include "myfork.h"
 
 extern void list();
 
@@ -33,4 +37,9 @@ extern void rmdir();
 extern void help();
 
 extern void execcmd();
+
+extern void interruption();
+
+extern void my_fork();
+
 #endif 

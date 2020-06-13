@@ -81,23 +81,23 @@ void switch_to(){
 void schedule(void){
     int i, c;
     struct task_struct ** p;
-    for(p = &LAST_TASK ; p > &FIRST_TASK ; --p){
-        if(*p){
-            if((*p)->timeout && (*p)->timeout < jiffies){
-                (*p)->timeout = 0;
-                if((*p)->state == TASK_INTERRUPTIBLE){
-                    (*p)->state = TASK_RUNNING;
-                }
-            }
-        }
-        // SIGALRM的操作是终止进程
-        if((*p)->alarm && (*p)->alarm < jiffies){
-            (*p)->signal |= (1<<(SIGALRM-1));
-            (*p)->alarm = 0;
-        }
-        if(((*p)->signal & ~(_BLOCKABLE & (*p)->blocked)) && (*p)->state == TASK_INTERRUPTIBLE)
-            (*p)->state = TASK_RUNNING;
-    }
+    // for(p = &LAST_TASK ; p > &FIRST_TASK ; --p){
+    //     if(*p){
+    //         if((*p)->timeout && (*p)->timeout < jiffies){
+    //             (*p)->timeout = 0;
+    //             if((*p)->state == TASK_INTERRUPTIBLE){
+    //                 (*p)->state = TASK_RUNNING;
+    //             }
+    //         }
+    //     }
+    //     // SIGALRM的操作是终止进程
+    //     if((*p)->alarm && (*p)->alarm < jiffies){
+    //         (*p)->signal |= (1<<(SIGALRM-1));
+    //         (*p)->alarm = 0;
+    //     }
+    //     if(((*p)->signal & ~(_BLOCKABLE & (*p)->blocked)) && (*p)->state == TASK_INTERRUPTIBLE)
+    //         (*p)->state = TASK_RUNNING;
+    // }
     while(1){
         c =-1;
         next = 0;
@@ -247,6 +247,29 @@ void first_proc(){
             continue;
         }
         //新增
+        if(!strcmp(cmd, "INT")){
+            interruption();
+            continue;
+        }
+        if(!strcmp(cmd, "adduser")){
+            adduser();
+            continue;   
+        }
+        if(!strcmp(cmd, "fork")){
+            my_fork();
+            continue;
+        }
+        if(!strcmp(cmd, "state")){
+            show_state();
+            continue;
+        }
+        if(!strcmp(cmd, "dotime")){
+            while(1){
+                sleep(1);
+                current->counter--;
+                schedule();
+            }
+        }
         if(cmd[0] == '.' && cmd[1] == '/'){
             char buff[50];
             memset(buff, 0, sizeof(buff));
@@ -278,6 +301,18 @@ void first_proc(){
             printf("commond not found : %s\n", cmd);
             printf("you can try help for help\n");
         }
+    }
+}
+
+void second_proc(){
+    while(1){
+        printf("A");
+    }
+}
+
+void third_proc(){
+    while(1){
+        printf("B");
     }
 }
 
